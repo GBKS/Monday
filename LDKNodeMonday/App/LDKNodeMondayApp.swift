@@ -1,10 +1,3 @@
-//
-//  LDKNodeMondayApp.swift
-//  LDKNodeMonday
-//
-//  Created by Matthew Ramsden on 2/20/23.
-//
-
 import SwiftUI
 
 @main

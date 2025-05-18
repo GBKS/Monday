@@ -1,145 +1,165 @@
-//
-//  OnboardingView.swift
-//  LDKNodeMonday
-//
-//  Created by Matthew Ramsden on 1/4/24.
-//
-
-import BitcoinUI
-import LDKNode
 import SwiftUI
 
 struct OnboardingView: View {
-
     @ObservedObject var viewModel: OnboardingViewModel
 
-    @State private var showingOnboardingViewErrorAlert = false
-    @State private var showingNetworkSettingsSheet = false
-    @State private var showingImportWalletSheet = false
-    @State private var animateContent = false
-
     var body: some View {
-
-        ZStack {
-            Color(uiColor: .systemBackground)
-                .ignoresSafeArea()
-
+        NavigationView {
             VStack {
-
-                // Network settings
-                HStack {
-                    Spacer()
-                    Button(
-                        action: {
-                            showingNetworkSettingsSheet.toggle()
-                        },
-                        label: {
-                            HStack(spacing: 5) {
-                                Text(
-                                    viewModel.walletClient.network.description
-                                        .capitalized
-                                )
-                                .opacity(animateContent ? 1 : 0)
-                                .offset(x: animateContent ? 0 : 100)
-                                Image(systemName: "gearshape")
-                                    .opacity(animateContent ? 1 : 0)
-                                    .offset(x: animateContent ? 0 : 100)
-                            }
-                        }
-                    )
-                    .sheet(isPresented: $showingNetworkSettingsSheet) {
-                        NavigationView {
-                            NetworkSettingsView(walletClient: viewModel.$walletClient)
-                        }
+                if viewModel.currentScreen == 0 {
+                    CoverScreen {
+                        viewModel.nextScreen()
                     }
-                }
-                .fontWeight(.medium)
-                .padding()
-                .animation(.easeOut(duration: 0.5).delay(0.6), value: animateContent)
-
-                // Logo, name and description
-                VStack {
-                    Image(systemName: "bolt.horizontal.fill")
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .foregroundColor(.accent)
-                        .frame(width: 150, height: 150, alignment: .center)
-                        .padding(40)
-                        .scaleEffect(animateContent ? 1 : 0)
-                        .opacity(animateContent ? 1 : 0)
-                        .animation(
-                            .spring(response: 0.6, dampingFraction: 0.5),
-                            value: animateContent
-                        )
-                    Group {
-                        Text("Monday Wallet")
-                            .font(.largeTitle.weight(.semibold))
-                        Text("An example bitcoin wallet\npowered by LDK Node")
-                            .font(.body)
-                            .multilineTextAlignment(.center)
-                            .fixedSize(horizontal: false, vertical: true)
+                } else if viewModel.currentScreen == 1 {
+                    BackupInformationScreen {
+                        viewModel.nextScreen()
                     }
-                    .opacity(animateContent ? 1 : 0)
-                    .offset(y: animateContent ? 0 : 20)
-                    .animation(.easeOut(duration: 0.5).delay(0.3), value: animateContent)
-                }
-
-                Spacer()
-
-                // Buttons for creating and importing wallet
-
-                Group {
-                    Button("Create wallet") {
-                        Task {
-                            await viewModel.saveSeed()
-                        }
+                } else if viewModel.currentScreen == 2 {
+                    ResponsibilityDisclaimerScreen {
+                        viewModel.nextScreen()
                     }
-                    .buttonStyle(
-                        BitcoinFilled(
-                            tintColor: .accent,
-                            isCapsule: true
-                        )
-                    )
-
-                    Button("Import wallet") {
-                        showingImportWalletSheet.toggle()
+                } else if viewModel.currentScreen == 3 {
+                    LSPScreen {
+                        viewModel.nextScreen()
                     }
-                    .buttonStyle(BitcoinPlain(tintColor: .accent))
-                    .sheet(isPresented: $showingImportWalletSheet) {
-                        ImportWalletView().environmentObject(viewModel)
+                } else if viewModel.currentScreen == 4 {
+                    UnitFormatScreen {
+                        viewModel.nextScreen()
                     }
-                }
-                .opacity(animateContent ? 1 : 0)
-                .offset(y: animateContent ? 0 : 30)
-                .animation(.easeOut(duration: 0.5).delay(0.6), value: animateContent)
-
-            }.dynamicTypeSize(...DynamicTypeSize.accessibility2)  // Sets max dynamic size for all Text
-
-        }.padding(.bottom, 20)
-            .alert(isPresented: $showingOnboardingViewErrorAlert) {
-                Alert(
-                    title: Text(viewModel.onboardingViewError?.title ?? "Unknown error"),
-                    message: Text(viewModel.onboardingViewError?.detail ?? "No details"),
-                    dismissButton: .default(Text("OK")) {
-                        viewModel.onboardingViewError = nil
+                } else if viewModel.currentScreen == 5 {
+                    NotificationPermissionScreen {
+                        viewModel.nextScreen()
                     }
-                )
-            }
-            .onAppear {
-                withAnimation {
-                    animateContent = true
+                } else if viewModel.currentScreen == 6 {
+                    FeaturesScreen {
+                        viewModel.nextScreen()
+                    }
+                } else if viewModel.currentScreen == 7 {
+                    InitialDepositScreen {
+                        viewModel.nextScreen()
+                    }
                 }
             }
-
+            .navigationBarItems(leading: Button(action: {
+                viewModel.previousScreen()
+            }) {
+                Text("Back")
+            })
+        }
     }
 }
 
-#if DEBUG
-    #Preview {
-        OnboardingView(
-            viewModel: .init(
-                walletClient: .constant(WalletClient(appMode: AppMode.mock))
-            )
-        )
+struct CoverScreen: View {
+    var nextAction: () -> Void
+
+    var body: some View {
+        VStack {
+            Text("Welcome to the Wallet App")
+            Button("Create wallet") {
+                nextAction()
+            }
+        }
     }
-#endif
+}
+
+struct BackupInformationScreen: View {
+    var nextAction: () -> Void
+
+    var body: some View {
+        VStack {
+            Text("Your wallet is being backed up automatically to iCloud.")
+            Button("Sounds good") {
+                nextAction()
+            }
+        }
+    }
+}
+
+struct ResponsibilityDisclaimerScreen: View {
+    var nextAction: () -> Void
+
+    var body: some View {
+        VStack {
+            Text("You are fully in control of your bitcoin.")
+            Button("I understand") {
+                nextAction()
+            }
+        }
+    }
+}
+
+struct LSPScreen: View {
+    var nextAction: () -> Void
+
+    var body: some View {
+        VStack {
+            Text("The application will rely on an LSP (Lightning Service Provider) for connecting to the lightning network.")
+            Button("Great") {
+                nextAction()
+            }
+        }
+    }
+}
+
+struct UnitFormatScreen: View {
+    var nextAction: () -> Void
+
+    var body: some View {
+        VStack {
+            Text("Choose your unit format:")
+            Button("Bitcoin") {
+                nextAction()
+            }
+            Button("Satoshi") {
+                nextAction()
+            }
+            Button("Simplified") {
+                nextAction()
+            }
+        }
+    }
+}
+
+struct NotificationPermissionScreen: View {
+    var nextAction: () -> Void
+
+    var body: some View {
+        VStack {
+            Text("Enable notifications to be informed of new payments.")
+            Button("Next") {
+                // Trigger OS-notification request here
+                nextAction()
+            }
+        }
+    }
+}
+
+struct FeaturesScreen: View {
+    var nextAction: () -> Void
+
+    var body: some View {
+        VStack {
+            Text("There are plenty of other features in the application. You will get to know them through your interactions.")
+            Button("Let's go") {
+                nextAction()
+            }
+        }
+    }
+}
+
+struct InitialDepositScreen: View {
+    var nextAction: () -> Void
+
+    var body: some View {
+        VStack {
+            Text("Make an initial deposit to have funds in your wallet.")
+            // QR code of the first bitcoin address should be displayed here
+            Button("Share") {
+                // Activate the native share sheet for sharing the bitcoin address as a BIP21 URI
+            }
+            Button("Do this later") {
+                nextAction()
+            }
+        }
+    }
+}
