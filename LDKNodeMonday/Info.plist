@@ -4,5 +4,10 @@
 <dict>
 	<key>NSPasteboardUsageDescription</key>
 	<string>To allow users to copy and paste text between the app and other apps</string>
+	<key>UIAppFonts</key>
+	<array>
+		<string>SF-Pro-Rounded-Regular.otf</string>
+		<string>SF-Pro-Rounded-Semibold.otf</string>
+	</array>
 </dict>
 </plist>

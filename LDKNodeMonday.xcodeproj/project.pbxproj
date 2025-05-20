@@ -3,10 +3,13 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 56;
+	objectVersion = 70;
 	objects = {
 
 /* Begin PBXBuildFile section */
+		594B60A82DDB2C290010B37B /* SF-Pro-Rounded-Semibold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 594B60A72DDB2C290010B37B /* SF-Pro-Rounded-Semibold.otf */; };
+		594B60A92DDB2C290010B37B /* SF-Pro-Rounded-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = 594B60A62DDB2C290010B37B /* SF-Pro-Rounded-Regular.otf */; };
+		594B60B32DDBE0C70010B37B /* cover.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 594B60B22DDBE0C70010B37B /* cover.mp4 */; };
 		652CF3A62D6DFEE200D700D0 /* AmountEntryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 652CF3A52D6DFEDC00D700D0 /* AmountEntryView.swift */; };
 		655574802D398A750064F859 /* LoadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6555747F2D398A750064F859 /* LoadingView.swift */; };
 		655574822D3994E10064F859 /* ErrorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 655574812D3994E10064F859 /* ErrorView.swift */; };
@@ -96,6 +99,9 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		594B60A62DDB2C290010B37B /* SF-Pro-Rounded-Regular.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SF-Pro-Rounded-Regular.otf"; sourceTree = "<group>"; };
+		594B60A72DDB2C290010B37B /* SF-Pro-Rounded-Semibold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SF-Pro-Rounded-Semibold.otf"; sourceTree = "<group>"; };
+		594B60B22DDBE0C70010B37B /* cover.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = cover.mp4; sourceTree = "<group>"; };
 		652CF3A52D6DFEDC00D700D0 /* AmountEntryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmountEntryView.swift; sourceTree = "<group>"; };
 		6555747F2D398A750064F859 /* LoadingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingView.swift; sourceTree = "<group>"; };
 		655574812D3994E10064F859 /* ErrorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorView.swift; sourceTree = "<group>"; };
@@ -178,6 +184,10 @@
 		AEFAF2912A433F6F001128DF /* LightningPaymentStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LightningPaymentStatus.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		594B60902DDA7B830010B37B /* Onboarding */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Onboarding; sourceTree = "<group>"; };
+/* End PBXFileSystemSynchronizedRootGroup section */
+
 /* Begin PBXFrameworksBuildPhase section */
 		AE17E8D329A402E30058C9C9 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
@@ -204,6 +214,9 @@
 				AE17E8D829A402E30058C9C9 /* LDKNodeMonday */,
 				AE17E8D729A402E30058C9C9 /* Products */,
 				AE17E8E929A403800058C9C9 /* Frameworks */,
+				594B60A62DDB2C290010B37B /* SF-Pro-Rounded-Regular.otf */,
+				594B60B22DDBE0C70010B37B /* cover.mp4 */,
+				594B60A72DDB2C290010B37B /* SF-Pro-Rounded-Semibold.otf */,
 			);
 			sourceTree = "<group>";
 		};
@@ -306,6 +319,7 @@
 			isa = PBXGroup;
 			children = (
 				65A406622D070CBD00EA331E /* NetworkSettingsView.swift */,
+				594B60902DDA7B830010B37B /* Onboarding */,
 				AE00550D2B479EF000100797 /* OnboardingView.swift */,
 				AE4C15B12A1316D100AA8917 /* BitcoinView.swift */,
 				659EE6942CF8D4990064ED78 /* ImportWalletView.swift */,
@@ -546,6 +560,9 @@
 			);
 			dependencies = (
 			);
+			fileSystemSynchronizedGroups = (
+				594B60902DDA7B830010B37B /* Onboarding */,
+			);
 			name = LDKNodeMonday;
 			packageProductDependencies = (
 				AEE5B7642A09B1FC001E5E59 /* CodeScanner */,
@@ -606,7 +623,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				594B60A82DDB2C290010B37B /* SF-Pro-Rounded-Semibold.otf in Resources */,
+				594B60A92DDB2C290010B37B /* SF-Pro-Rounded-Regular.otf in Resources */,
 				AE5C4FD529A5565700BE3285 /* README.md in Resources */,
+				594B60B32DDBE0C70010B37B /* cover.mp4 in Resources */,
 				AE17E8E129A402E40058C9C9 /* Preview Assets.xcassets in Resources */,
 				AE17E8DE29A402E40058C9C9 /* Assets.xcassets in Resources */,
 			);
@@ -826,7 +846,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"LDKNodeMonday/Preview Content\"";
-				DEVELOPMENT_TEAM = 9G6M658RKZ;
+				DEVELOPMENT_TEAM = 2XW7BAURR2;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = LDKNodeMonday/Info.plist;
@@ -844,7 +864,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.matthewramsden.LDKNodeMonday;
+				PRODUCT_BUNDLE_IDENTIFIER = com.christophono.LDKNodeMonday;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -860,7 +880,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"LDKNodeMonday/Preview Content\"";
-				DEVELOPMENT_TEAM = 9G6M658RKZ;
+				DEVELOPMENT_TEAM = 2XW7BAURR2;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = LDKNodeMonday/Info.plist;
@@ -878,7 +898,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.matthewramsden.LDKNodeMonday;
+				PRODUCT_BUNDLE_IDENTIFIER = com.christophono.LDKNodeMonday;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;

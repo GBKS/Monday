@@ -1,43 +1,141 @@
 import SwiftUI
+import BitcoinUI
 
 struct InitialDepositView: View {
+    @State private var imageY: CGFloat = 0
     var nextAction: () -> Void
     var backAction: () -> Void
 
+    @ObservedObject var viewModel: OnboardingViewModel
+
     var body: some View {
-        VStack {
-            HStack {
-                Button(action: {
-                    backAction()
-                }) {
-                    Text("Back")
+        ZStack {
+            // Background
+            LinearGradient(
+                gradient: Gradient(colors: [
+                    Color(red: 194/255, green: 153/255, blue: 176/255),
+                    Color(red: 201/255, green: 155/255, blue: 182/255)
+                ]),
+                startPoint: .top,
+                endPoint: .bottom
+            )
+            .ignoresSafeArea()
+
+            // Absolutely positioned image using imageY
+            GeometryReader { geo in
+                Image("frame") // Use your image name here
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: geo.size.width)
+                    .position(x: geo.size.width / 2, y: imageY == 0 ? geo.size.height / 2 : imageY)
+            }
+
+            // Content
+            VStack(spacing: 0) {
+                // Top Bar
+                HStack {
+                    Button(action: backAction) {
+                        Image(systemName: "chevron.left")
+                            .foregroundColor(Color.white)
+                            .font(.title2)
+                    }
+                    .padding(.leading)
+                    Spacer()
                 }
-                .padding()
-                Spacer()
+                .frame(height: 56)
+                .padding(.top, 8)
+                
+                // Header
+                VStack(spacing: 16) {
+                    Text("Make your first bitcoin deposit")
+                        .font(.custom("SFProRounded-Semibold", size: 27))
+                        .foregroundColor(Color.white)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal)
+                    Text("You can’t do much with an empty wallet. Share your address below to get your first bitcoin.")
+                        .font(.custom("SFProRounded-Regular", size: 21))
+                        .foregroundColor(Color.white)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal)
+                        .lineSpacing(4)
+                }
+                .padding(.top, 0)
+
+                // The block whose midY we want
+                GeometryReader { spacerGeo in
+                    let midY = spacerGeo.frame(in: .named("container")).midY
+                    Color.clear
+                        .preference(key: ImageYPreferenceKey.self, value: midY)
+                }
+                .frame(maxHeight: .infinity)
+
+                Button(action: {
+                    Task {
+                        await viewModel.saveSeed()
+                    }
+                }) {
+                    Text("Share")
+                        .font(.custom("SFProRounded-Semibold", size: 21))
+                        .foregroundColor(Color(red: 83/255, green: 54/255, blue: 77/255))
+                        .padding(.vertical, 14)
+                        .frame(maxWidth: .infinity)
+                        .background(
+                            RoundedRectangle(cornerRadius: 15)
+                                .fill(Color.white)
+                        )
+                }
+                .padding(.horizontal)
+                .padding(.bottom, 16)
+
+                Button(action: {
+                    Task {
+                        await viewModel.saveSeed()
+                    }
+                }) {
+                    Text("Do this later")
+                        .font(.custom("SFProRounded-Semibold", size: 21))
+                        .foregroundColor(Color.white)
+                        .padding(.vertical, 14)
+                        .frame(maxWidth: .infinity)
+                }
+                .background(
+                    ZStack {
+                        Color.white.opacity(0.05)
+                        .clipShape(RoundedRectangle(cornerRadius: 15))
+                    }
+                )
+                .clipShape(RoundedRectangle(cornerRadius: 15))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 15)
+                        .stroke(Color.white, lineWidth: 1)
+                )
+                .padding(.horizontal)
+                .padding(.bottom, 32)
             }
-            Spacer()
-            Text("Make an initial deposit to have funds in your wallet.")
-                .padding()
-            // QR code of the first bitcoin address should be displayed here
-            Spacer()
-            Button("Share") {
-                // Activate the native share sheet for sharing the bitcoin address as a BIP21 URI
+            .frame(maxHeight: .infinity)
+            .onPreferenceChange(ImageYPreferenceKey.self) { y in
+                imageY = y
             }
-            .buttonStyle(BitcoinFilled(tintColor: .accent, isCapsule: true))
-            .padding()
-            Button("Do this later") {
-                nextAction()
-            }
-            .buttonStyle(BitcoinFilled(tintColor: .accent, isCapsule: true))
-            .padding()
         }
+        .coordinateSpace(name: "container")
+    }
+}
+
+private struct ImageYPreferenceKey: PreferenceKey {
+    static var defaultValue: CGFloat = 0
+    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
+        value = nextValue()
     }
 }
 
 #if DEBUG
 struct InitialDepositView_Previews: PreviewProvider {
     static var previews: some View {
-        InitialDepositView(nextAction: {}, backAction: {})
+        InitialDepositView(
+            nextAction: {}, 
+            backAction: {},
+            viewModel: OnboardingViewModel(walletClient: .constant(WalletClient(appMode: .mock)))
+        )
     }
 }
 #endif
