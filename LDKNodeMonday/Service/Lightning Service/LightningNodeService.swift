@@ -37,28 +37,30 @@ class LightningNodeService {
     init(
         keyService: KeyClient = .live
     ) {
-
-        if let backupInfo = try? KeyClient.live.getBackupInfo() {
-            guard let network = Network(stringValue: backupInfo.networkString) else {
-                // This should never happen, but if it does:
-                fatalError("Configuration error: No Network found in BackupInfo")
+        var backupInfo: BackupInfo? = nil
+        do {
+            backupInfo = try? KeyClient.live.getBackupInfo()
+            if let info = backupInfo {
+                if Network(stringValue: info.networkString) == nil ||
+                    EsploraServer(URLString: info.serverURL) == nil ||
+                    info.mnemonic.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                    // Corrupted network, server, or missing mnemonic
+                    throw KeyServiceError.decodingError
+                }
             }
-            self.network = network
+        } catch {
+            // Corrupted backup, delete and block wallet access
+            try? KeyClient.live.deleteBackupInfo()
+            fatalError("Wallet state is corrupted or missing. Please restore or re-import your wallet.")
+        }
 
-            guard
-                let server =
-                    EsploraServer(URLString: backupInfo.serverURL)
-                    ?? availableServers(network: network).first
-            else {
-                // This should never happen, but if it does:
-                fatalError("Configuration error: No Esplora servers available for \(network)")
-            }
-            self.server = server
+        if let backupInfo = backupInfo {
+            self.network = Network(stringValue: backupInfo.networkString) ?? .signet
+            self.server = EsploraServer(URLString: backupInfo.serverURL) ?? .mutiny_signet
         } else {
             self.network = .signet
             self.server = .mutiny_signet
         }
-
         self.keyService = keyService
 
         let documentsPath = FileManager.default.getDocumentsDirectoryPath()
@@ -133,27 +135,14 @@ class LightningNodeService {
         let mnemonic: String
         do {
             let backupInfo = try keyService.getBackupInfo()
-            if backupInfo.mnemonic == "" {
-                let newMnemonic = generateEntropyMnemonic()
-                let backupInfo = BackupInfo(
-                    mnemonic: newMnemonic,
-                    networkString: self.network.description,
-                    serverURL: self.server.url
-                )
-                try? keyService.saveBackupInfo(backupInfo)
-                mnemonic = newMnemonic
+            if backupInfo.mnemonic.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                // Do not auto-generate a new mnemonic, block wallet access
+                throw KeyServiceError.decodingError
             } else {
                 mnemonic = backupInfo.mnemonic
             }
         } catch {
-            let newMnemonic = generateEntropyMnemonic()
-            let backupInfo = BackupInfo(
-                mnemonic: newMnemonic,
-                networkString: self.network.description,
-                serverURL: self.server.url
-            )
-            try? keyService.saveBackupInfo(backupInfo)
-            mnemonic = newMnemonic
+            fatalError("Wallet mnemonic is missing or corrupted. Please restore or re-import your wallet.")
         }
         nodeBuilder.setEntropyBip39Mnemonic(mnemonic: mnemonic, passphrase: nil)
 
@@ -502,7 +491,7 @@ extension LightningNodeClient {
         restart: {},
         reset: {},
         nodeId: { "038474837483784378437843784378437843784378" },
-        newAddress: { "tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx" },
+        newAddress: { "tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzs" },
         balances: { .mock },
         spendableOnchainBalanceSats: { 100_000 },
         totalOnchainBalanceSats: { 150_000 },
