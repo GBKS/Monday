@@ -33,6 +33,7 @@ class LightningNodeService {
     var networkColor = Color.black
     var network: Network
     var server: EsploraServer
+    var lsp: LightningServiceProvider
 
     init(
         keyService: KeyClient = .live
@@ -54,9 +55,14 @@ class LightningNodeService {
                 fatalError("Configuration error: No Esplora servers available for \(network)")
             }
             self.server = server
+            self.lsp =
+                LightningServiceProvider.getByNodeId(
+                    backupInfo.lspNodeId ?? LightningServiceProvider.see_signet.nodeId
+                ) ?? .see_signet
         } else {
             self.network = .signet
             self.server = .mutiny_signet
+            self.lsp = .see_signet
         }
 
         self.keyService = keyService
@@ -88,19 +94,14 @@ class LightningNodeService {
         config.storageDirPath = networkPath
         //        config.logDirPath = logPath
         config.network = self.network
-        config.trustedPeers0conf = [
-            Constants.Config.LiquiditySourceLsps2.Signet.megalith.nodeId
-        ]
+        config.trustedPeers0conf = [self.lsp.nodeId]
         //        config.logLevel = .trace
-        
+
         let anchor_cfg = AnchorChannelsConfig(
-            trustedPeersNoReserve: [
-                Constants.Config.LiquiditySourceLsps2.Signet.megalith.nodeId
-            ],
+            trustedPeersNoReserve: [self.lsp.nodeId],
             perChannelReserveSats: UInt64(0)
         )
         config.anchorChannelsConfig = .some(anchor_cfg)
-        
 
         let nodeBuilder = Builder.fromConfig(config: config)
         nodeBuilder.setChainSourceEsplora(serverUrl: self.server.url, config: nil)
@@ -121,9 +122,9 @@ class LightningNodeService {
                 rgsServerUrl: Constants.Config.RGSServerURLNetwork.signet
             )
             nodeBuilder.setLiquiditySourceLsps2(
-                nodeId: Constants.Config.LiquiditySourceLsps2.Signet.megalith.nodeId,
-                address: Constants.Config.LiquiditySourceLsps2.Signet.megalith.address,
-                token: Constants.Config.LiquiditySourceLsps2.Signet.megalith.token
+                nodeId: lsp.nodeId,
+                address: lsp.address,
+                token: lsp.token
             )
             self.networkColor = Constants.BitcoinNetworkColor.signet.color
         case .regtest:
@@ -157,8 +158,30 @@ class LightningNodeService {
         }
         nodeBuilder.setEntropyBip39Mnemonic(mnemonic: mnemonic, passphrase: nil)
 
-        let ldkNode = try! nodeBuilder.build()  // Handle error instead of "!"
-        self.ldkNode = ldkNode
+        do {
+            let ldkNode = try nodeBuilder.build()
+            self.ldkNode = ldkNode
+        } catch {
+            print("Failed to build node, attempting recovery: \(error)")
+            // If wallet setup fails, clean up and try once more
+            if case BuildError.WalletSetupFailed = error {
+                print("Cleaning up corrupted wallet data...")
+                try? FileManager.default.removeItem(atPath: networkPath)
+
+                // Recreate the directories
+                try? FileManager.default.createDirectory(
+                    atPath: logPath,
+                    withIntermediateDirectories: true
+                )
+
+                // Try building again with clean state
+                let ldkNode = try! nodeBuilder.build()
+                self.ldkNode = ldkNode
+            } else {
+                // For other errors, fail as before
+                fatalError("Unexpected error building node: \(error)")
+            }
+        }
     }
 
     func start() async throws {
@@ -170,17 +193,25 @@ class LightningNodeService {
     }
 
     func restart() async throws {
-        if LightningNodeService.shared.status().isRunning {
-            try LightningNodeService.shared.stop()
+        if self.status().isRunning {
+            try self.stop()
         }
-        LightningNodeService._shared = nil
-        try await LightningNodeService.shared.start()
+        try await self.start()
     }
 
     func reset() throws {
         if LightningNodeService.shared.status().isRunning {
             try LightningNodeService.shared.stop()
         }
+
+        // Clean up wallet data to prevent conflicts on next initialization
+        let documentsPath = FileManager.default.getDocumentsDirectoryPath()
+        let networkPath = URL(fileURLWithPath: documentsPath)
+            .appendingPathComponent(network.description)
+            .path
+
+        try? FileManager.default.removeItem(atPath: networkPath)
+
         LightningNodeService._shared = nil
     }
 
@@ -518,7 +549,14 @@ extension LightningNodeClient {
         receive: { _, _, _ in
             "bitcoin:BC1QYLH3U67J673H6Y6ALV70M0PL2YZ53TZHVXGG7U?amount=0.00001&label=sbddesign%3A%20For%20lunch%20Tuesday&message=For%20lunch%20Tuesday&lightning=LNBC10U1P3PJ257PP5YZTKWJCZ5FTL5LAXKAV23ZMZEKAW37ZK6KMV80PK4XAEV5QHTZ7QDPDWD3XGER9WD5KWM36YPRX7U3QD36KUCMGYP282ETNV3SHJCQZPGXQYZ5VQSP5USYC4LK9CHSFP53KVCNVQ456GANH60D89REYKDNGSMTJ6YW3NHVQ9QYYSSQJCEWM5CJWZ4A6RFJX77C490YCED6PEMK0UPKXHY89CMM7SCT66K8GNEANWYKZGDRWRFJE69H9U5U0W57RRCSYSAS7GADWMZXC8C6T0SPJAZUP6&lightning=LNO1PG257ENXV4EZQCNEYPE82UM50YNHXGRWDAJX283QFWDPL28QQMC78YMLVHMXCSYWDK5WRJNJ36JRYG488QWLRNZYJCZS"
         },
-        bolt11Payment: { _, _, _, _, _ in Bolt11Invoice("lnbc1...") },
+        bolt11Payment: {
+            _,
+            _,
+            _,
+            _,
+            _
+            in try! Bolt11Invoice.fromStr(invoiceStr: "lnbc1...")
+        },
         listPeers: { [] },
         listChannels: { [] },
         listPayments: { mockPayments },
