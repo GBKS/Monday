@@ -5,6 +5,7 @@ struct LSPView: View {
     @State private var imageY: CGFloat = 0
     var nextAction: () -> Void
     var backAction: () -> Void
+    var showOptionsAction: () -> Void
 
     var body: some View {
         ZStack {
@@ -81,7 +82,7 @@ struct LSPView: View {
                 .padding(.horizontal)
                 .padding(.bottom, 16)
 
-                Button(action: nextAction) {
+                Button(action: showOptionsAction) {
                     Text("View options")
                         .font(.custom("SFProRounded-Semibold", size: 21))
                         .foregroundColor(.white)
@@ -122,7 +123,7 @@ private struct ImageYPreferenceKey: PreferenceKey {
 #if DEBUG
 struct LSPView_Previews: PreviewProvider {
     static var previews: some View {
-        LSPView(nextAction: {}, backAction: {})
+        LSPView(nextAction: {}, backAction: {}, showOptionsAction: {})
     }
 }
 #endif

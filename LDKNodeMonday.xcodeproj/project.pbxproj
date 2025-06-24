@@ -7,10 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		59110D262DE3B54D00998279 /* coins.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 59110D252DE3B54D00998279 /* coins.mp4 */; };
 		594B60A82DDB2C290010B37B /* SF-Pro-Rounded-Semibold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 594B60A72DDB2C290010B37B /* SF-Pro-Rounded-Semibold.otf */; };
 		594B60A92DDB2C290010B37B /* SF-Pro-Rounded-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = 594B60A62DDB2C290010B37B /* SF-Pro-Rounded-Regular.otf */; };
 		594B60B32DDBE0C70010B37B /* cover.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 594B60B22DDBE0C70010B37B /* cover.mp4 */; };
 		65269D402DF9C32F00EB63F3 /* LSPSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65269D3F2DF9C32F00EB63F3 /* LSPSettingsView.swift */; };
+		59CE533D2DDD201C00080B43 /* cover-2.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 59CE533C2DDD201C00080B43 /* cover-2.mp4 */; };
 		652CF3A62D6DFEE200D700D0 /* AmountEntryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 652CF3A52D6DFEDC00D700D0 /* AmountEntryView.swift */; };
 		655574802D398A750064F859 /* LoadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6555747F2D398A750064F859 /* LoadingView.swift */; };
 		655574822D3994E10064F859 /* ErrorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 655574812D3994E10064F859 /* ErrorView.swift */; };
@@ -100,10 +102,12 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		59110D252DE3B54D00998279 /* coins.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = coins.mp4; sourceTree = "<group>"; };
 		594B60A62DDB2C290010B37B /* SF-Pro-Rounded-Regular.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SF-Pro-Rounded-Regular.otf"; sourceTree = "<group>"; };
 		594B60A72DDB2C290010B37B /* SF-Pro-Rounded-Semibold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SF-Pro-Rounded-Semibold.otf"; sourceTree = "<group>"; };
 		594B60B22DDBE0C70010B37B /* cover.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = cover.mp4; sourceTree = "<group>"; };
 		65269D3F2DF9C32F00EB63F3 /* LSPSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LSPSettingsView.swift; sourceTree = "<group>"; };
+		59CE533C2DDD201C00080B43 /* cover-2.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = "cover-2.mp4"; sourceTree = "<group>"; };
 		652CF3A52D6DFEDC00D700D0 /* AmountEntryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmountEntryView.swift; sourceTree = "<group>"; };
 		6555747F2D398A750064F859 /* LoadingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingView.swift; sourceTree = "<group>"; };
 		655574812D3994E10064F859 /* ErrorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorView.swift; sourceTree = "<group>"; };
@@ -218,6 +222,8 @@
 				AE17E8E929A403800058C9C9 /* Frameworks */,
 				594B60A62DDB2C290010B37B /* SF-Pro-Rounded-Regular.otf */,
 				594B60B22DDBE0C70010B37B /* cover.mp4 */,
+				59110D252DE3B54D00998279 /* coins.mp4 */,
+				59CE533C2DDD201C00080B43 /* cover-2.mp4 */,
 				594B60A72DDB2C290010B37B /* SF-Pro-Rounded-Semibold.otf */,
 			);
 			sourceTree = "<group>";
@@ -630,6 +636,8 @@
 				594B60A92DDB2C290010B37B /* SF-Pro-Rounded-Regular.otf in Resources */,
 				AE5C4FD529A5565700BE3285 /* README.md in Resources */,
 				594B60B32DDBE0C70010B37B /* cover.mp4 in Resources */,
+				59110D262DE3B54D00998279 /* coins.mp4 in Resources */,
+				59CE533D2DDD201C00080B43 /* cover-2.mp4 in Resources */,
 				AE17E8E129A402E40058C9C9 /* Preview Assets.xcassets in Resources */,
 				AE17E8DE29A402E40058C9C9 /* Assets.xcassets in Resources */,
 			);
@@ -854,7 +862,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = LDKNodeMonday/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = Monday;
+				INFOPLIST_KEY_CFBundleDisplayName = Sunday;
 				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_NSCameraUsageDescription = "\"To scan QR codes.\"";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -888,7 +896,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = LDKNodeMonday/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = Monday;
+				INFOPLIST_KEY_CFBundleDisplayName = Sunday;
 				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_NSCameraUsageDescription = "\"To scan QR codes.\"";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;

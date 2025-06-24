@@ -5,6 +5,7 @@ struct BackupInformationView: View {
     @State private var imageY: CGFloat = 0
     var nextAction: () -> Void
     var backAction: () -> Void
+    var showDetailsAction: () -> Void
 
     var body: some View {
         ZStack {
@@ -81,7 +82,7 @@ struct BackupInformationView: View {
                 .padding(.horizontal)
                 .padding(.bottom, 16)
 
-                Button(action: nextAction) {
+                Button(action: showDetailsAction) {
                     Text("View options")
                         .font(.custom("SFProRounded-Semibold", size: 21))
                         .foregroundColor(Color(red: 141/255, green: 34/255, blue: 110/255))
@@ -121,7 +122,7 @@ private struct ImageYPreferenceKey: PreferenceKey {
 #if DEBUG
 struct BackupInformationView_Previews: PreviewProvider {
     static var previews: some View {
-        BackupInformationView(nextAction: {}, backAction: {})
+        BackupInformationView(nextAction: {}, backAction: {}, showDetailsAction: {})
     }
 }
 #endif

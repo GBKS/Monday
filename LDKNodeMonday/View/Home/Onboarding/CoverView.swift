@@ -21,7 +21,7 @@ struct CoverScreen: View {
         self.backAction = backAction
         self.viewModel = viewModel
 
-        if let url = Bundle.main.url(forResource: "cover", withExtension: "mp4") {
+        if let url = Bundle.main.url(forResource: "cover-2", withExtension: "mp4") {
             let item = AVPlayerItem(url: url)
             let queuePlayer = AVQueuePlayer(items: [item])
             let looper = AVPlayerLooper(player: queuePlayer, templateItem: item)
@@ -88,7 +88,8 @@ struct CoverScreen: View {
                     }
                 }
                 .fontWeight(.medium)
-                .padding()
+                .padding(.horizontal)
+                .padding(.top, 32)
                 .animation(.easeOut(duration: 0.5).delay(0.6), value: animateContent)
 
                 Spacer()
@@ -96,14 +97,14 @@ struct CoverScreen: View {
                 // Logo, name and description
                 VStack {
                     Group {
-                        Text("Bubble wallet")
+                        Text("Sunday wallet")
                             .font(.custom("SFProRounded-Semibold", size: 36))
                             .foregroundColor(.white)
                             .multilineTextAlignment(.center)
                             .padding(.horizontal)
                             .padding(.bottom, 4)
                         Text("Just Bitcoin. Soft on the outside, serious underneath.")
-                            .font(.custom("SFProRounded-Regular", size: 24))
+                            .font(.custom("SFProRounded-Semibold", size: 24))
                             .foregroundColor(.white)
                             .multilineTextAlignment(.center)
                             .padding(.horizontal)
@@ -143,7 +144,7 @@ struct CoverScreen: View {
                     ZStack {
                         Color(red: 160/255, green: 99/255, blue: 147/255).opacity(0.05)
                         .clipShape(RoundedRectangle(cornerRadius: 15))
-                        .background(.ultraThinMaterial)
+                        .background(Color.black.opacity(0.05))
                     }
                 )
                 .clipShape(RoundedRectangle(cornerRadius: 15))

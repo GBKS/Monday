@@ -1,65 +1,32 @@
 import SwiftUI
 import BitcoinUI
-import AVKit
 
-struct NotificationPermissionView: View {
+struct LSPDetailsView: View {
+    @State private var imageY: CGFloat = 0
     var nextAction: () -> Void
     var backAction: () -> Void
 
-    private let player: AVQueuePlayer
-    private var looper: AVPlayerLooper?
-
-    init(nextAction: @escaping () -> Void, backAction: @escaping () -> Void) {
-        self.nextAction = nextAction
-        self.backAction = backAction
-
-        if let url = Bundle.main.url(forResource: "coins", withExtension: "mp4") {
-            let item = AVPlayerItem(url: url)
-            let queuePlayer = AVQueuePlayer(items: [item])
-            let looper = AVPlayerLooper(player: queuePlayer, templateItem: item)
-            queuePlayer.isMuted = true
-            queuePlayer.play()
-            self.player = queuePlayer
-            self.looper = looper // <-- keep a strong reference
-        } else {
-            self.player = AVQueuePlayer()
-            self.looper = nil
-        }
-    }
-
     var body: some View {
         ZStack {
-            // Background gradient overlay (optional, can adjust opacity if needed)
+            // Background
             LinearGradient(
                 gradient: Gradient(colors: [
-                    Color(red: 244/255, green: 118/255, blue: 48/255),
-                    Color(red: 249/255, green: 169/255, blue: 69/255)
+                    Color(red: 194/255, green: 153/255, blue: 176/255),
+                    Color(red: 201/255, green: 155/255, blue: 182/255)
                 ]),
                 startPoint: .top,
                 endPoint: .bottom
             )
             .ignoresSafeArea()
 
-            // Background image for the whole screen
+            // Absolutely positioned image using imageY
             GeometryReader { geo in
-                Image("coins")
+                Image("lsp") // Use your image name here
                     .resizable()
-                    .aspectRatio(contentMode: .fill)
-                    .frame(width: geo.size.width, height: geo.size.height)
-                    .clipped()
-                    .ignoresSafeArea()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: geo.size.width)
+                    .position(x: geo.size.width / 2, y: imageY == 0 ? geo.size.height / 2 : imageY)
             }
-
-            // Video background
-            VideoPlayer(player: player)
-                .ignoresSafeArea()
-                .onAppear {
-                    player.play()
-                    player.isMuted = true
-                }
-                .disabled(true) // Prevents interaction
-                .overlay(Color.clear) // Prevents accidental tap showing controls
-                .allowsHitTesting(false) // Ensures no interaction, so controls never show
 
             // Content
             VStack(spacing: 0) {
@@ -78,12 +45,12 @@ struct NotificationPermissionView: View {
                 
                 // Header
                 VStack(spacing: 16) {
-                    Text("Want to be notified when you receive bitcoin?")
+                    Text("Time to move fast.")
                         .font(.custom("SFProRounded-Semibold", size: 27))
                         .foregroundColor(.white)
                         .multilineTextAlignment(.center)
                         .padding(.horizontal)
-                    Text("We can bug you right away. Or not.")
+                    Text("Lightning lets you send Bitcoin instantly with tiny fees. We’ll set you up with a provider so you’re good to go.")
                         .font(.custom("SFProRounded-Regular", size: 21))
                         .foregroundColor(.white)
                         .multilineTextAlignment(.center)
@@ -92,12 +59,18 @@ struct NotificationPermissionView: View {
                 }
                 .padding(.top, 0)
 
-                Spacer()
+                // The block whose midY we want
+                GeometryReader { spacerGeo in
+                    let midY = spacerGeo.frame(in: .named("container")).midY
+                    Color.clear
+                        .preference(key: ImageYPreferenceKey.self, value: midY)
+                }
+                .frame(maxHeight: .infinity)
 
                 Button(action: nextAction) {
-                    Text("Let me know")
+                    Text("Use default")
                         .font(.custom("SFProRounded-Semibold", size: 21))
-                        .foregroundColor(Color(red: 142/255, green: 28/255, blue: 1/255))
+                        .foregroundColor(Color(red: 160/255, green: 99/255, blue: 147/255))
                         .padding(.vertical, 14)
                         .frame(maxWidth: .infinity)
                         .background(
@@ -109,7 +82,7 @@ struct NotificationPermissionView: View {
                 .padding(.bottom, 16)
 
                 Button(action: nextAction) {
-                    Text("Nope")
+                    Text("View options")
                         .font(.custom("SFProRounded-Semibold", size: 21))
                         .foregroundColor(.white)
                         .padding(.vertical, 14)
@@ -117,7 +90,7 @@ struct NotificationPermissionView: View {
                 }
                 .background(
                     ZStack {
-                        Color(red: 142/255, green: 28/255, blue: 1/255).opacity(0.05)
+                        Color(red: 160/255, green: 99/255, blue: 147/255).opacity(0.05)
                         .clipShape(RoundedRectangle(cornerRadius: 15))
                         .background(.ultraThinMaterial)
                     }
@@ -131,15 +104,25 @@ struct NotificationPermissionView: View {
                 .padding(.bottom, 32)
             }
             .frame(maxHeight: .infinity)
+            .onPreferenceChange(ImageYPreferenceKey.self) { y in
+                imageY = y
+            }
         }
         .coordinateSpace(name: "container")
     }
 }
 
+private struct ImageYPreferenceKey: PreferenceKey {
+    static var defaultValue: CGFloat = 0
+    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
+        value = nextValue()
+    }
+}
+
 #if DEBUG
-struct NotificationPermissionView_Previews: PreviewProvider {
+struct LSPDetailsView_Previews: PreviewProvider {
     static var previews: some View {
-        NotificationPermissionView(nextAction: {}, backAction: {})
+        LSPDetailsView(nextAction: {}, backAction: {})
     }
 }
 #endif
