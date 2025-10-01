@@ -18,6 +18,7 @@ struct PaymentsListView: View {
     @Binding var displayBalanceType: DisplayBalanceType
     var price: Double
     @State private var selectedPayment: PaymentDetails?
+    @State private var hasLoaded = false
 
     var sections: [PaymentSection] {
         orderedStatuses.compactMap { status -> PaymentSection? in
@@ -38,23 +39,33 @@ struct PaymentsListView: View {
     var body: some View {
         List {
             Section {
-                if payments.isEmpty {
-                    Text("No activity, yet.\nGo get some bitcoin!")
-                        .font(.caption)
-                        .multilineTextAlignment(.center)
-                        .foregroundColor(.secondary)
-                        .frame(maxWidth: .infinity, minHeight: 400)  // Ensure vertical space
+                if !hasLoaded {
+                    EmptyView()
+                        .frame(maxWidth: .infinity, minHeight: 400)
                         .listRowSeparator(.hidden)
+                } else if payments.isEmpty {
+                    VStack(spacing: 20) {
+                        Text("No activity, yet.\nGo get some bitcoin!")
+                            .font(.body)
+                            .multilineTextAlignment(.center)
+                            .foregroundColor(.secondary)
+
+                        Image("super")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 150, height: 150)
+                    }
+                    .frame(maxWidth: .infinity, minHeight: 400)  // Ensure vertical space
+                    .listRowSeparator(.hidden)
                 } else {
                     // List payments
-                    // Filter out: .pending that are older than 30 minutes or 0 amount
+                    // Filter out: .pending and .failed that are older than 30 minutes or 0 amount
                     ForEach(
                         payments
                             .filter {
-                                $0.status != .pending
-                                    || ($0.status == .pending
-                                        && Double($0.latestUpdateTimestamp) > Date()
-                                            .timeIntervalSince1970 - 1800
+                                ($0.status != .pending && $0.status != .failed)
+                                    || (Double($0.latestUpdateTimestamp) > Date()
+                                        .timeIntervalSince1970 - 1800
                                         && ($0.amountMsat ?? 0) > 0)
                             }
                             .sorted { $0.latestUpdateTimestamp > $1.latestUpdateTimestamp },
@@ -84,6 +95,14 @@ struct PaymentsListView: View {
         }
         .listStyle(.plain)
         .padding(.horizontal)
+        .onAppear {
+            DispatchQueue.main.async {
+                hasLoaded = true
+            }
+        }
+        .onChange(of: payments) {
+            hasLoaded = true
+        }
         .sheet(item: $selectedPayment) { paymentDetail in
             PaymentDetailView(
                 payment: paymentDetail,
@@ -161,6 +180,13 @@ struct PaymentItemView: View {
     #Preview {
         PaymentsListView(
             payments: .constant(mockPayments),
+            displayBalanceType: .constant(.fiatSats),
+            price: 75000.14
+        )
+    }
+    #Preview {
+        PaymentsListView(
+            payments: .constant([]),
             displayBalanceType: .constant(.fiatSats),
             price: 75000.14
         )

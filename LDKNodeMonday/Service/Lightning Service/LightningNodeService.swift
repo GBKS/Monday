@@ -97,6 +97,13 @@ class LightningNodeService {
         config.trustedPeers0conf = [self.lsp.nodeId]
         //        config.logLevel = .trace
 
+        // Faster sync intervals for better balance updates (moved under EsploraSyncConfig)
+        let backgroundSync = BackgroundSyncConfig(
+            onchainWalletSyncIntervalSecs: 20,  // Default: 80 seconds
+            lightningWalletSyncIntervalSecs: 10,  // Default: 30 seconds
+            feeRateCacheUpdateIntervalSecs: 600  // Default: 600 seconds
+        )
+
         let anchor_cfg = AnchorChannelsConfig(
             trustedPeersNoReserve: [self.lsp.nodeId],
             perChannelReserveSats: UInt64(0)
@@ -104,7 +111,11 @@ class LightningNodeService {
         config.anchorChannelsConfig = .some(anchor_cfg)
 
         let nodeBuilder = Builder.fromConfig(config: config)
-        nodeBuilder.setChainSourceEsplora(serverUrl: self.server.url, config: nil)
+        // Enable filesystem logging
+        let logFilePath = logPath + "/ldk-node.log"
+        nodeBuilder.setFilesystemLogger(logFilePath: logFilePath, maxLogLevel: .trace)
+        let esploraSyncConfig = EsploraSyncConfig(backgroundSyncConfig: .some(backgroundSync))
+        nodeBuilder.setChainSourceEsplora(serverUrl: self.server.url, config: esploraSyncConfig)
 
         switch self.network {
         case .bitcoin:
@@ -390,6 +401,10 @@ extension LightningNodeService {
             }
         }
     }
+
+    func syncWallets() throws {
+        try self.ldkNode.syncWallets()
+    }
 }
 
 extension LightningNodeService {
@@ -443,6 +458,7 @@ public struct LightningNodeClient {
     let getServer: () -> EsploraServer
     let getNetworkColor: () -> Color
     let listenForEvents: () -> Void
+    let syncWallets: () throws -> Void
 }
 
 extension LightningNodeClient {
@@ -522,7 +538,8 @@ extension LightningNodeClient {
         getNetwork: { LightningNodeService.shared.network },
         getServer: { LightningNodeService.shared.server },
         getNetworkColor: { LightningNodeService.shared.networkColor },
-        listenForEvents: { LightningNodeService.shared.listenForEvents() }
+        listenForEvents: { LightningNodeService.shared.listenForEvents() },
+        syncWallets: { try LightningNodeService.shared.syncWallets() }
     )
 }
 
@@ -590,7 +607,8 @@ extension LightningNodeClient {
         getNetwork: { .signet },
         getServer: { .mutiny_signet },
         getNetworkColor: { .orange },
-        listenForEvents: {}
+        listenForEvents: {},
+        syncWallets: {}
     )
 }
 
